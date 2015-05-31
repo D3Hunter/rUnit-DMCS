@@ -1,0 +1,8 @@
+1. on startup, open data window.
+
+2. master node accept load file command, generate file list from configuration and send file distribution to slave node.
+   Should consider algorithm for file distribution accounting for file size and replication. Kind of like knapsack problem.
+3. slave node load file in the list
+4. master node accumulate meta-data from slave node and broadcast the accumulated meta-data to all slave node. i.e. all broadcast.
+5. When servicing client read, use random algorithm to select from replicating file location. As replication count is known on startup, we use a hash table(or map) to store <file name> <meta-datas> pairs, each <meta-datas> is an array storing all meta-data of <file name>. All arrays are allocated on serial memory location to get better locality.
+6. Any need to create speperate threas? It's needed on startup.

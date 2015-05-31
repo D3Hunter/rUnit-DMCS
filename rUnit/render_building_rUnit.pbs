@@ -1,0 +1,23 @@
+#PBS -q batch
+#PBS -l nodes=2:ppn=12
+#PBS -o pbs_render.out
+#PBS -e pbs_render.err
+
+echo $PBS_O_WORKDIR
+
+cd $PBS_O_WORKDIR
+
+export MV2_ENABLE_AFFINITY=0
+export PATH=/gos4/user39/863_project/HPRenderingSystem/bin:${PATH}
+export PIXIEHOME=/gos4/user39/863_project/HPRenderingSystem
+
+cat $PBS_NODEFILE | uniq > nodefile.txt
+NP=`cat nodefile.txt | wc -l`
+#NP=`expr $NP + $NP` # use 2*node processes
+cat nodefile.txt > nodefile.txt.tmp
+#cat nodefile.txt >> nodefile.txt.tmp
+sort nodefile.txt.tmp > nodefile.txt
+rm nodefile.txt.tmp -f
+
+mpirun_rsh -rsh  -hostfile nodefile.txt -n $NP rUnit  -t 8 -s 192.168.0.100 -b 600 -r 1
+
